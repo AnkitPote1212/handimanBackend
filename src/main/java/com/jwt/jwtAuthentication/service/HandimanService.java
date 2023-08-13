@@ -154,7 +154,7 @@ public class HandimanService {
 	public void savehandimanUser(HandimanPojo handimanPojo) throws IOException {
 		if(handimanUserRepository.findByEmail(handimanPojo.getEmail())==null) {
 		String imageFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"profile-pic/");
-		String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"resume/");
+		String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getDocumentUpload(),"resume/");
 		CityEntity city=cityRepository.findByCityNameForCity(handimanPojo.getCity());
 		ServiceEntity service=servieRepository.findByCityService(handimanPojo.getService());
 		HandimanUserEntity handimanUserEntity=new HandimanUserEntity(handimanPojo.getFirstName(),handimanPojo.getLastName(),city,handimanPojo.getEmail(),1.0f,Long.parseLong(handimanPojo.getContactNumber()),imageFileName,resumeFileName,handimanPojo.getAboutMe(),handimanPojo.getPassword(),service);
@@ -232,10 +232,10 @@ public class HandimanService {
 		}else {
 			if(handimanPojo.getImageUpload()!=null && handimanPojo.getDocumentUpload()!=null) {
 				HandimanUserEntity handiman=handimanUserRepository.findByEmail(handimanPojo.getEmail());
-//				String imageFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"profile-pic/");
-//				String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"resume/");
-				String imageFileName="testImage";
-				String resumeFileName="TestResume";
+				String imageFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"profile-pic/");
+				String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"resume/");
+//				String imageFileName="testImage";
+//				String resumeFileName="TestResume";
 				CityEntity city=cityRepository.findByCityNameForCity(handimanPojo.getCity());
 				ServiceEntity service=servieRepository.findByCityService(handimanPojo.getService());
 				HandimanUserEntity handimanUserEntity=new HandimanUserEntity(handiman.getUserId(),handimanPojo.getFirstName(),handimanPojo.getLastName(),city,handimanPojo.getEmail(),1.0f,Long.parseLong(handimanPojo.getContactNumber()),imageFileName,resumeFileName,handimanPojo.getAboutMe(),handimanPojo.getPassword(),service);
@@ -248,8 +248,8 @@ public class HandimanService {
 				return user;
 			}else if(handimanPojo.getImageUpload()!=null && handimanPojo.getDocumentUpload()==null) {
 				HandimanUserEntity handiman=handimanUserRepository.findByEmail(handimanPojo.getEmail());
-				//String imageFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"profile-pic/");
-				String imageFileName="testImage";
+				String imageFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"profile-pic/");
+				//String imageFileName="testImage";
 				CityEntity city=cityRepository.findByCityNameForCity(handimanPojo.getCity());
 				ServiceEntity service=servieRepository.findByCityService(handimanPojo.getService());
 				HandimanUserEntity handimanUserEntity=new HandimanUserEntity(handiman.getUserId(),handimanPojo.getFirstName(),handimanPojo.getLastName(),city,handimanPojo.getEmail(),1.0f,Long.parseLong(handimanPojo.getContactNumber()),imageFileName,handiman.getResumeUrl(),handimanPojo.getAboutMe(),handimanPojo.getPassword(),service);
@@ -263,8 +263,8 @@ public class HandimanService {
 				
 			}else if(handimanPojo.getImageUpload()==null && handimanPojo.getDocumentUpload()!=null) {
 				HandimanUserEntity handiman=handimanUserRepository.findByEmail(handimanPojo.getEmail());
-				//String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"resume/");
-				String resumeFileName="TestResume";
+				String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"resume/");
+				//String resumeFileName="TestResume";
 				CityEntity city=cityRepository.findByCityNameForCity(handimanPojo.getCity());
 				ServiceEntity service=servieRepository.findByCityService(handimanPojo.getService());
 				HandimanUserEntity handimanUserEntity=new HandimanUserEntity(handiman.getUserId(),handimanPojo.getFirstName(),handimanPojo.getLastName(),city,handimanPojo.getEmail(),1.0f,Long.parseLong(handimanPojo.getContactNumber()),handiman.getProfileImgUrl(),resumeFileName,handimanPojo.getAboutMe(),handimanPojo.getPassword(),service);
