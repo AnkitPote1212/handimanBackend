@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,13 +24,22 @@ public interface HandimanUserRepository extends JpaRepository<HandimanUserEntity
 		       "JOIN UserPincodeEntity up ON up.user = u " +
 		       "WHERE c.cityName = :cityName " +
 		       "AND s.serviceName = :serviceName " +
-		       "AND up.pincode.postalCode = :postalCode")
+		       "AND up.pincode.postalCode = :postalCode "+
+		       "AND u.active=true "+
+		       "AND u.verified=true")
 		Optional<List<HandimanUserEntity>> findHandiman(@Param("cityName") String cityName, 
 		                                                @Param("serviceName") String serviceName, 
 		                                                @Param("postalCode") Long postalCode);
 	
 	@Query("SELECT handimanUser FROM HandimanUserEntity handimanUser WHERE handimanUser.email = :email")
 	HandimanUserEntity findByEmail(String email);
+	
+	@Query("SELECT handimanUser FROM HandimanUserEntity handimanUser WHERE handimanUser.verified = false")
+	List<HandimanUserEntity> findHandimanUnapproved();
+	
+	@Modifying
+	@Query("UPDATE HandimanUserEntity handimanUser SET handimanUser.verified = true WHERE handimanUser.email = :email")
+	void approveUser(String email);
 
 
 }

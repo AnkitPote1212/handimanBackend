@@ -57,6 +57,21 @@ public class HandimanInfo {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	public HandimanInfo(String firstName, String lastName, String city, String serviceProvided, float experiance,
+			Long contactNumber, String email, String profileImage, String aboutMe, String resumeUrl) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.city = city;
+		this.serviceProvided = serviceProvided;
+		this.experiance = experiance;
+		this.contactNumber = contactNumber;
+		this.email = email;
+		this.profileImage = profileImage;
+		this.aboutMe = aboutMe;
+		this.resumeUrl = resumeUrl;
+	}
 
 	public HandimanInfo(String firstName, String lastName, String city, String serviceProvided, float experiance,
 			Long contactNumber, String email, String profileImage, String aboutMe) {
@@ -71,6 +86,7 @@ public class HandimanInfo {
 		this.profileImage = profileImage;
 		this.aboutMe = aboutMe;
 	}
+	
 
 	public HandimanInfo(String firstName, String lastName, String city, String serviceProvided, float experiance,
 			Long contactNumber, String email, String profileImage, String aboutMe, List<Long> postalCode) {

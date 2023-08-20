@@ -12,7 +12,6 @@ public class UserPojo {
 	
 	private String city;
 	
-	@JsonIgnore
 	private String password;
 	
 	private String role;

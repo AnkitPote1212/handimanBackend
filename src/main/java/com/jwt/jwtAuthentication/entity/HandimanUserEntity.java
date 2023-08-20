@@ -46,6 +46,12 @@ public class HandimanUserEntity {
 	
 	private String role="HANDIMAN_USER";
 	
+	private Boolean active;
+	
+	private Boolean verified;
+	
+	private Long passCode;
+	
 	@JsonIgnore
 	@ManyToOne
     @JoinColumn(name = "service_id")
@@ -146,6 +152,19 @@ public class HandimanUserEntity {
 	public void setService(ServiceEntity service) {
 		this.service = service;
 	}
+	
+
+	public Long getPassCode() {
+		return passCode;
+	}
+
+	public void setPassCode(Long passCode) {
+		this.passCode = passCode;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
 
 	public HandimanUserEntity(Long userId, String firstName, String lastName, CityEntity city, String email,
 			float experience, long contactNo, String profileImgUrl, String resumeUrl, String aboutMe, String password,
@@ -208,6 +227,106 @@ public class HandimanUserEntity {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
+	public Boolean getVerified() {
+		return verified;
+	}
+
+	public void setVerified(Boolean verified) {
+		this.verified = verified;
+	}
+
+	public HandimanUserEntity(Long userId, String firstName, String lastName, CityEntity city, String email,
+			float experience, long contactNo, String profileImgUrl, String resumeUrl, String aboutMe, String password,
+			String role, Boolean active, ServiceEntity service) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.city = city;
+		this.email = email;
+		this.experience = experience;
+		ContactNo = contactNo;
+		this.profileImgUrl = profileImgUrl;
+		this.resumeUrl = resumeUrl;
+		this.aboutMe = aboutMe;
+		this.password = password;
+		this.role = role;
+		this.active = active;
+		this.service = service;
+	}
+
+	public HandimanUserEntity(Long userId, String firstName, String lastName, CityEntity city, String email,
+			float experience, long contactNo, String profileImgUrl, String resumeUrl, String aboutMe, String password,
+			String role, Boolean active, Boolean verified, ServiceEntity service) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.city = city;
+		this.email = email;
+		this.experience = experience;
+		ContactNo = contactNo;
+		this.profileImgUrl = profileImgUrl;
+		this.resumeUrl = resumeUrl;
+		this.aboutMe = aboutMe;
+		this.password = password;
+		this.role = role;
+		this.active = active;
+		this.verified = verified;
+		this.service = service;
+	}
+
+	public HandimanUserEntity(Long userId, String firstName, String lastName, CityEntity city, String email,
+			float experience, long contactNo, String profileImgUrl, String resumeUrl, String aboutMe, String password,
+			String role, Boolean active, Boolean verified, Long passCode, ServiceEntity service) {
+		super();
+		this.userId = userId;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.city = city;
+		this.email = email;
+		this.experience = experience;
+		ContactNo = contactNo;
+		this.profileImgUrl = profileImgUrl;
+		this.resumeUrl = resumeUrl;
+		this.aboutMe = aboutMe;
+		this.password = password;
+		this.role = role;
+		this.active = active;
+		this.verified = verified;
+		this.passCode = passCode;
+		this.service = service;
+	}
+
+	public HandimanUserEntity(String firstName, String lastName, CityEntity city, String email, float experience,
+			long contactNo, String profileImgUrl, String resumeUrl, String aboutMe, String password, Boolean active,
+			Boolean verified, Long passCode, ServiceEntity service) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.city = city;
+		this.email = email;
+		this.experience = experience;
+		ContactNo = contactNo;
+		this.profileImgUrl = profileImgUrl;
+		this.resumeUrl = resumeUrl;
+		this.aboutMe = aboutMe;
+		this.password = password;
+		this.active = active;
+		this.verified = verified;
+		this.passCode = passCode;
+		this.service = service;
+	}
+
 	
 	
 }

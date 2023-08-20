@@ -23,6 +23,16 @@ public class User {
 	private String role;
 	private Long cityId;
 	private boolean isActive;
+	private Long passCode;
+	
+	
+	
+	public Long getPassCode() {
+		return passCode;
+	}
+	public void setPassCode(Long passCode) {
+		this.passCode = passCode;
+	}
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", password=" + password
@@ -103,4 +113,31 @@ public class User {
 		this.cityId = cityId;
 		this.isActive = isActive;
 	}
+	
+	public User(String firstName, String lastName, String password, String email, String role, Long cityId,
+			boolean isActive, Long passCode) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.password = password;
+		this.email = email;
+		this.role = role;
+		this.cityId = cityId;
+		this.isActive = isActive;
+		this.passCode = passCode;
+	}
+	public User(Long id, String firstName, String lastName, String password, String email, String role, Long cityId,
+			boolean isActive, Long passCode) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.password = password;
+		this.email = email;
+		this.role = role;
+		this.cityId = cityId;
+		this.isActive = isActive;
+		this.passCode = passCode;
+	}
+	
 }

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +33,7 @@ import com.jwt.jwtAuthentication.model.City;
 import com.jwt.jwtAuthentication.model.CityServiceDetails;
 import com.jwt.jwtAuthentication.model.HandimanInfo;
 import com.jwt.jwtAuthentication.model.HandimanPojo;
+import com.jwt.jwtAuthentication.model.PinVerification;
 import com.jwt.jwtAuthentication.model.ServiceParameters;
 import com.jwt.jwtAuthentication.model.User;
 import com.jwt.jwtAuthentication.model.UserPojo;
@@ -43,6 +45,7 @@ import com.jwt.jwtAuthentication.repo.UserPincodeRepository;
 import com.jwt.jwtAuthentication.repo.UserRepository;
 import com.jwt.jwtAuthentication.utils.EmailUtils;
 import com.jwt.jwtAuthentication.utils.ImageStoreAwsUtils;
+import com.jwt.jwtAuthentication.utils.RandomPinGenerator;
 
 import ch.qos.logback.classic.Logger;
 
@@ -72,6 +75,12 @@ public class HandimanService {
 	
 	@Autowired
 	private EmailUtils emailUtils;
+	
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+    private RandomPinGenerator randomPinGenerator;
 	
 	
 	@Value("${project.image}")
@@ -105,7 +114,7 @@ public class HandimanService {
 				
 				//String imageUrl=generateImageUrl(user.getProfileImgUrl());
 				//String resumeUrl=generateResumeUrl(user.getResumeUrl());
-				handimanInfoList.add(new HandimanInfo(user.getFirstName(),user.getLastName(),user.getCity().getCityName(),user.getService().getServiceName(),user.getExperience(),user.getContactNo(),user.getEmail(),user.getProfileImgUrl(),user.getAboutMe()));
+				handimanInfoList.add(new HandimanInfo(user.getFirstName(),user.getLastName(),user.getCity().getCityName(),user.getService().getServiceName(),user.getExperience(),user.getContactNo(),user.getEmail(),user.getProfileImgUrl(),user.getAboutMe(),user.getResumeUrl()));
 			}
 			
 			
@@ -143,24 +152,41 @@ public class HandimanService {
 		return cityRepository.findAllCities();
 		
 	}
-	public void saveUser(UserPojo appUser) {
-		if(userRepository.findByEmail(appUser.getEmail())==null) {
-		User user=new User(appUser.getFirstName(),appUser.getLastName(),appUser.getPassword(),appUser.getEmail(),appUser.getRole(),cityRepository.findByCityName(appUser.getCity()).get(),true);
+	public boolean saveUser(UserPojo appUser) {
+		if(userRepository.findByEmail(appUser.getEmail())==null && handimanUserRepository.findByEmail(appUser.getEmail())==null) {
+		Long pin=(long) randomPinGenerator.generateRandomSixDigitNumber();
+		User user=new User(appUser.getFirstName(),appUser.getLastName(),passwordEncoder.encode(appUser.getPassword()),appUser.getEmail(),appUser.getRole(),cityRepository.findByCityName(appUser.getCity()).get(),false,pin);
 		userRepository.save(user);
+		try {
+			emailUtils.sendSimpleEmail(user.getEmail(), "Handiman - Pin Verification", "Your OTP : "+pin);
+			}catch(Exception e) {
+				System.out.println(e);
+			}
+		return true;
 		}else {
 			System.out.println("User already exist");
+		return false;
 		}
 	}
-	public void savehandimanUser(HandimanPojo handimanPojo) throws IOException {
-		if(handimanUserRepository.findByEmail(handimanPojo.getEmail())==null) {
+	public boolean savehandimanUser(HandimanPojo handimanPojo) throws IOException {
+		if(handimanUserRepository.findByEmail(handimanPojo.getEmail())==null && userRepository.findByEmail(handimanPojo.getEmail())==null) {
 		String imageFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getImageUpload(),"profile-pic/");
 		String resumeFileName=imageStoreAwsUtils.uploadFile(handimanPojo.getDocumentUpload(),"resume/");
 		CityEntity city=cityRepository.findByCityNameForCity(handimanPojo.getCity());
 		ServiceEntity service=servieRepository.findByCityService(handimanPojo.getService());
-		HandimanUserEntity handimanUserEntity=new HandimanUserEntity(handimanPojo.getFirstName(),handimanPojo.getLastName(),city,handimanPojo.getEmail(),1.0f,Long.parseLong(handimanPojo.getContactNumber()),imageFileName,resumeFileName,handimanPojo.getAboutMe(),handimanPojo.getPassword(),service);
+		Long pin=(long) randomPinGenerator.generateRandomSixDigitNumber();
+		HandimanUserEntity handimanUserEntity=new HandimanUserEntity(handimanPojo.getFirstName(),handimanPojo.getLastName(),city,handimanPojo.getEmail(),1.0f,Long.parseLong(handimanPojo.getContactNumber()),imageFileName,resumeFileName,handimanPojo.getAboutMe(),passwordEncoder.encode(handimanPojo.getPassword()),false,false,pin,service);
 		//handimanUserRepository.save(handimanUserEntity);
-		
 		userPincodeRepository.save(new UserPincodeEntity(handimanUserRepository.save(handimanUserEntity),pinCodeRepository.findByPostalCode(Long.parseLong(handimanPojo.getPincode()))));
+		try {
+			emailUtils.sendSimpleEmail(handimanPojo.getEmail(), "Handiman - Pin Verification", "Your OTP : "+pin);
+			}catch(Exception e) {
+				System.out.println(e);
+			}
+		return true;
+		}else {
+			System.out.println("User already exist");
+			return false;
 		}
 	}
 	private String uploadImage(String imagePath, MultipartFile imageUpload) throws IOException {
@@ -209,11 +235,6 @@ public class HandimanService {
 		List<CityEntity> cityEntity=cityRepository.findAll();
 		List<City> cityList=new ArrayList<>();
 		cityEntity.stream().map(city -> cityList.add(new City(city.getCityId(),city.getCityName(),city.getCityImage()))).collect(Collectors.toList());
-		try {
-		emailUtils.sendSimpleEmail("ankitpote1@gmail.com", "Test", "sample mail check");
-		}catch(Exception e) {
-			System.out.println(e);
-		}
 		return cityList;
 	}
 	@Transactional
@@ -292,5 +313,57 @@ public class HandimanService {
 			}
 		}
 		return null;
+	}
+	public boolean verifyPin(PinVerification pinVerification) {
+		User user=userRepository.findByEmail(pinVerification.getEmail());
+		if(user!=null) {
+			if(user.getPassCode().toString().equals(pinVerification.getPin())) {
+				user.setActive(true);
+				userRepository.save(user);
+				try {
+					emailUtils.sendSimpleEmail(user.getEmail(), "Welcome to handiman", "Your email verification is succesful. \n \n Thank you !");
+					}catch(Exception e) {
+						System.out.println(e);
+					}
+				return true;
+			}else {
+				return false;
+			}
+		}else if(user==null) {
+		HandimanUserEntity handiman=handimanUserRepository.findByEmail(pinVerification.getEmail());
+		if(handiman.getPassCode().toString().equals(pinVerification.getPin())) {
+			handiman.setActive(true);
+			handimanUserRepository.save(handiman);
+			try {
+				emailUtils.sendSimpleEmail(handiman.getEmail(), "Welcome to handiman", "Your email verification is succesfula and your profile verification is in progress \n"
+						+ "once your profile get verified you will get email notification and your profile will be visible to users of your city. \n \n Thank you !");
+				}catch(Exception e) {
+					System.out.println(e);
+				}
+			return true;
+		}else {
+			return false;
+		}
+		}
+		return false;
+	}
+	public List<HandimanInfo> getUnApprovedHandimanList() {
+		List<HandimanUserEntity> userOptional=handimanUserRepository.findHandimanUnapproved();
+		List<HandimanInfo> handimanInfoList=new ArrayList<>();
+		for(HandimanUserEntity user:userOptional) {
+			handimanInfoList.add(new HandimanInfo(user.getFirstName(),user.getLastName(),user.getCity().getCityName(),user.getService().getServiceName(),user.getExperience(),user.getContactNo(),user.getEmail(),user.getProfileImgUrl(),user.getAboutMe(),user.getResumeUrl()));
+		}
+		return handimanInfoList;
+	}
+	@Transactional
+	public boolean approveUser(String email) {
+		handimanUserRepository.approveUser(email);
+		try {
+			emailUtils.sendSimpleEmail(email, "You are verfied now", "Congratulation!! You are now verified handyman\n"
+					+ "now you will be visible to the people who require your service. \n \n Thank you !");
+			}catch(Exception e) {
+				System.out.println(e);
+			}
+		return true;
 	}
 }
