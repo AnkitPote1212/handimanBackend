@@ -72,5 +72,16 @@ public class HomeController {
 			 return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		 }
 	}
+	@PostMapping("/forgotpassword")
+	public ResponseEntity<Map<String,String>> verifyPin(@RequestBody String email){
+		Map<String,String> map=new HashMap<>();
+		if(handimanService.forgotpassword(email)) {
+			map.put("successMsg","pin sent on user email");
+			 return new ResponseEntity<>(map,HttpStatus.OK);
+		}else {
+			 map.put("errorMsg","email not present");
+			 return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+		 }
+	}
 
 }

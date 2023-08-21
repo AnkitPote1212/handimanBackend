@@ -366,4 +366,33 @@ public class HandimanService {
 			}
 		return true;
 	}
+	public boolean forgotpassword(String email) {
+		Long pin=(long) randomPinGenerator.generateRandomSixDigitNumber();
+		User user=userRepository.findByEmail(email);
+		if(user!=null) {
+			user.setPassCode(pin);
+			userRepository.save(user);
+			try {
+				emailUtils.sendSimpleEmail(email, "Handiman - Forgot password pin", "Your OTP for forgot pin: "+pin);
+				}catch(Exception e) {
+					System.out.println(e);
+				}
+			return true;
+			}else{
+				HandimanUserEntity handiman=handimanUserRepository.findByEmail(email);
+				if(handiman!=null) {
+					handiman.setPassCode(pin);
+					handimanUserRepository.save(handiman);
+					try {
+						emailUtils.sendSimpleEmail(email, "Handiman - Forgot password pin", "Your OTP for forgot Password is: "+pin);
+						}catch(Exception e) {
+							System.out.println(e);
+						}
+					return true;
+				}else {
+					return false;
+				}
+				
+			}
+	}
 }
