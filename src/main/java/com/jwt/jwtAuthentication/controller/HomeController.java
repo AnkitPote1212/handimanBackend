@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jwt.jwtAuthentication.model.City;
 import com.jwt.jwtAuthentication.model.CityServiceDetails;
+import com.jwt.jwtAuthentication.model.ForgotPwdDetails;
 import com.jwt.jwtAuthentication.model.HandimanPojo;
 import com.jwt.jwtAuthentication.model.PinVerification;
 import com.jwt.jwtAuthentication.model.UserPojo;
@@ -80,6 +81,17 @@ public class HomeController {
 			 return new ResponseEntity<>(map,HttpStatus.OK);
 		}else {
 			 map.put("errorMsg","email not present");
+			 return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+		 }
+	}
+	@PostMapping("/forgotPwdDetail")
+	public ResponseEntity<Map<String,String>> changePwd(@RequestBody ForgotPwdDetails forgotPwdDetails){
+		Map<String,String> map=new HashMap<>();
+		if(handimanService.changePwd(forgotPwdDetails)) {
+			map.put("successMsg","Password Chnaged");
+			 return new ResponseEntity<>(map,HttpStatus.OK);
+		}else {
+			 map.put("errorMsg","wrong otp");
 			 return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
 		 }
 	}

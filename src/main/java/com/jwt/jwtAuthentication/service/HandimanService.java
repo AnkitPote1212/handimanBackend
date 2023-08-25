@@ -31,6 +31,7 @@ import com.jwt.jwtAuthentication.entity.ServiceEntity;
 import com.jwt.jwtAuthentication.entity.UserPincodeEntity;
 import com.jwt.jwtAuthentication.model.City;
 import com.jwt.jwtAuthentication.model.CityServiceDetails;
+import com.jwt.jwtAuthentication.model.ForgotPwdDetails;
 import com.jwt.jwtAuthentication.model.HandimanInfo;
 import com.jwt.jwtAuthentication.model.HandimanPojo;
 import com.jwt.jwtAuthentication.model.PinVerification;
@@ -394,5 +395,37 @@ public class HandimanService {
 				}
 				
 			}
+	}
+	public boolean changePwd(ForgotPwdDetails forgotPwdDetails) {
+		User user=userRepository.findByEmail(forgotPwdDetails.getRegisteredEmail());
+		if(user!=null) {
+			if(user.getPassCode().toString().equals(forgotPwdDetails.getPin())) {
+				user.setPassword(passwordEncoder.encode(forgotPwdDetails.getPassword()));
+				userRepository.save(user);
+				try {
+					emailUtils.sendSimpleEmail(user.getEmail(), "Password Change", "Your Password is changed succesfully. \n \n Thank you !");
+					}catch(Exception e) {
+						System.out.println(e);
+					}
+				return true;
+			}else {
+				return false;
+			}
+		}else if(user==null) {
+		HandimanUserEntity handiman=handimanUserRepository.findByEmail(forgotPwdDetails.getRegisteredEmail());
+		if(handiman.getPassCode().toString().equals(forgotPwdDetails.getPin())) {
+			handiman.setPassword(passwordEncoder.encode(forgotPwdDetails.getPassword()));
+			handimanUserRepository.save(handiman);
+			try {
+				emailUtils.sendSimpleEmail(handiman.getEmail(), "Password Change", "Your Password is changed succesfully. \n \n Thank you !");
+				}catch(Exception e) {
+					System.out.println(e);
+				}
+			return true;
+		}else {
+			return false;
+		}
+		}
+		return false;
 	}
 }
