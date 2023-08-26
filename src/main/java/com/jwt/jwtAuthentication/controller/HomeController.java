@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jwt.jwtAuthentication.model.City;
+import com.jwt.jwtAuthentication.model.CityOnboard;
 import com.jwt.jwtAuthentication.model.CityServiceDetails;
 import com.jwt.jwtAuthentication.model.ForgotPwdDetails;
 import com.jwt.jwtAuthentication.model.HandimanPojo;
@@ -93,6 +94,17 @@ public class HomeController {
 		}else {
 			 map.put("errorMsg","wrong otp");
 			 return new ResponseEntity<>(map,HttpStatus.BAD_REQUEST);
+		 }
+	}
+	@PostMapping("/addCity")
+	public ResponseEntity<Map<String,String>> addCity(@RequestBody CityOnboard  city){
+		Map<String,String> map=new HashMap<>();
+		if(handimanService.saveCity(city)) {
+			map.put("successMsg","City onboarded");
+			 return new ResponseEntity<>(map,HttpStatus.OK);
+		}else {
+			 map.put("errorMsg","duplicate city or pincodes");
+			 return new ResponseEntity<>(map,HttpStatus.FORBIDDEN);
 		 }
 	}
 

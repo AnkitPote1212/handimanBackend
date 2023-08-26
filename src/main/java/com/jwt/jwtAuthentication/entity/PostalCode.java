@@ -61,6 +61,12 @@ public class PostalCode {
 	public String toString() {
 		return "PostalCode [id=" + id + ", cityId=" + city.getCityId() + ", postalCode=" + postalCode + "]";
 	}
+
+	public PostalCode(CityEntity city, Long postalCode) {
+		super();
+		this.city = city;
+		this.postalCode = postalCode;
+	}
 	
     
     

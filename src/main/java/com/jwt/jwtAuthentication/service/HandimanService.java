@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import com.jwt.jwtAuthentication.entity.PostalCode;
 import com.jwt.jwtAuthentication.entity.ServiceEntity;
 import com.jwt.jwtAuthentication.entity.UserPincodeEntity;
 import com.jwt.jwtAuthentication.model.City;
+import com.jwt.jwtAuthentication.model.CityOnboard;
 import com.jwt.jwtAuthentication.model.CityServiceDetails;
 import com.jwt.jwtAuthentication.model.ForgotPwdDetails;
 import com.jwt.jwtAuthentication.model.HandimanInfo;
@@ -427,5 +429,24 @@ public class HandimanService {
 		}
 		}
 		return false;
+	}
+	public boolean saveCity(CityOnboard city) {
+		try {
+		String imageFileName=imageStoreAwsUtils.uploadFile(city.getCityImage(),"city-images/");
+		CityEntity savedCity=cityRepository.save(new CityEntity(city.getCityName(),imageFileName));
+		String pinCodes[]=city.getPincodes().split(",");
+		Long[] pinCode = Arrays.stream(pinCodes)
+                .map(String::trim)
+                .mapToLong(Long::parseLong)
+                .boxed()
+                .toArray(Long[]::new);
+		for(Long i:pinCode) {
+			pinCodeRepository.save(new PostalCode(savedCity,i));
+		}
+		}catch(Exception e) {
+			System.out.println(e);
+			return false;
+		}
+		return true;
 	}
 }

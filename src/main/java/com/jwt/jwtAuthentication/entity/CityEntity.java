@@ -101,6 +101,11 @@ public class CityEntity implements Comparable {
 	public String toString() {
 		return "CityEntity [cityId=" + cityId + ", cityName=" + cityName + "]";
 	}
+	public CityEntity(String cityName, String cityImage) {
+		super();
+		this.cityName = cityName;
+		this.cityImage = cityImage;
+	}
 
 	@Override
 	public int compareTo(Object o) {
